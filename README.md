@@ -1,16 +1,20 @@
 # React-Github-Search
 Search the GitHub API for relevant repos matching the search term and the selected programming language
 
+
+## Instructions:
+- Clone this repository to the directory of your choice. 
+
 Note: To build and run this app, Node/NPM and NPX needs to be running on your system. 
 
 Install Node and NPM: 
-  Mac: 
-    Using Homebrew: brew install node
-  Windows:
-    Using Chocolatey: choco install nodejs
+  - Mac: 
+    - Using Homebrew: brew install node
+  - Windows:
+    - Using Chocolatey: choco install nodejs
 
 Install NPX:
-  npm i npx
+  - npm i npx
   
 
 Open up a terminal and cd to the directory you created for the cloned repo.
