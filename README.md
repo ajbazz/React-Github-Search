@@ -7,13 +7,13 @@ Search the GitHub API for relevant repos matching the search term and the select
 
 Note: To build and run this app, Node/NPM and NPX needs to be running on your system. 
 
-Install Node and NPM: 
+### Install Node and NPM: 
   - Mac: 
     - Using Homebrew: brew install node
   - Windows:
     - Using Chocolatey: choco install nodejs
 
-Install NPX:
+### Install NPX:
   - npm i npx
   
 
