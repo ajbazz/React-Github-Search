@@ -1,0 +1,1 @@
+export const Languages = ["JavaScript", "Python", "Java", "C++", "C", "PHP", "C#", "Shell", "Go", "TypeScript", "Ruby", "Jupyter Notebook", "Objective-C", "Swift", "Kotlin", "R", "Scala", "Rust", "Lua", "Matlab", "PowerShell", "CoffeeScript", "Perl", "Groovy", "Haskell"]
