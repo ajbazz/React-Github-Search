@@ -11,10 +11,8 @@ class SearchBox extends Component {
             language: '',
             getNewData: false
         }
+        this.searchParams = [];
         this.langRef = React.createRef();
-        this.handleLangChange = this.handleLangChange.bind(this);
-        this.handleTopicChange = this.handleTopicChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     componentDidMount() {
@@ -24,17 +22,18 @@ class SearchBox extends Component {
         }
     }
 
-    handleLangChange = (e) => {
-        this.setState({language: e.target.value, getNewData: false})
+    handleChange = (event) => {
+        event.preventDefault();      
+        if (event.target.name === "topic") {
+            this.searchParams[0] = event.target.value;
+        } else {
+            this.searchParams[1] = event.target.value;
+        }
     }
-
-    handleTopicChange = (e) => {
-        this.setState({topic: e.target.value, getNewData: false})
-    }
-
-    handleSubmit = (e) => {
-        e.preventDefault();
-        this.setState({getNewData: true});
+    
+    handleSubmit = (event) => {
+        event.preventDefault();
+        this.setState({getNewData: true, topic: this.searchParams[0], language: this.searchParams[1]});
     }
 
     render() {
@@ -43,34 +42,34 @@ class SearchBox extends Component {
                 <Row>
                     <Col md={2}></Col>
                     <Col md={8}>
-                        <form onSubmit={this.handleSubmit}>
+                        <form>
                             <div className="form-row align-items-center">
-                                <Col md={1}></Col>
-                                <Col md={5}>
+                                <Col md={5} ml={3}>
                                     <input
                                         autoFocus
                                         required
                                         className="form-control mr-2"
-                                        onChange={this.handleTopicChange}
-                                        value={this.state.topic}
-                                        placeholder="Search for Repos"/>
+                                        name="topic"
+                                        onChange={this.handleChange}
+                                        value={this.topic}
+                                        placeholder="e.g. twitter, chess, aws"/>
                                 </Col>
-                                <Col md={5}>
+                                <Col md={5} pr={0}>
                                     <select
                                         required
                                         className="form-control mr-2"
                                         ref={this.langRef}
-                                        defaultValue={this.state.language}
-                                        onChange={this.handleLangChange}>
+                                        name="language"
+                                        defaultValue={this.language}
+                                        onChange={this.handleChange}>
                                         <option value="">Choose a language</option>
                                     </select>
                                 </Col>
                                 <Col md={1}>
                                     <span className="input-group-btn">
-                                        <button className="btn btn-default btn-lg btn-hover btn-primary" type="submit">Search</button>
+                                        <button className="btn btn-default btn-lg btn-hover btn-primary" type="button" onClick={this.handleSubmit}>Search</button>
                                     </span>
                                 </Col>
-                                <Col md={1}></Col>
                             </div>
                         </form>
                     </Col>
@@ -79,10 +78,10 @@ class SearchBox extends Component {
                 <Row>
                     <Col md={2}></Col>
                     <Col md={8}>
-                      {this.state.getNewData
-                        ? <Repos topic={this.state.topic} language={this.state.language} />
-                        : null
-                      }
+                        {this.state.getNewData
+                            ? <Repos topic={this.state.topic} language={this.state.language}/>
+                            : null
+}
                     </Col>
                     <Col md={2}></Col>
 
