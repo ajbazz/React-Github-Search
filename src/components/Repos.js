@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
-import Spinner from './images/spin1.gif'
+import Spinner from './images/spin1.gif';
+import {FaCaretDown, FaCaretUp} from "react-icons/fa";
 
 class Repos extends Component {
     constructor() {
@@ -7,10 +8,9 @@ class Repos extends Component {
         this.state = {
             results: [],
             loading: false,
-            noResults: false
+            noResults: false,
+            sortDesc: true
         }
-        this.noResults = false;
-        this.loading = false;
         this.GitUrl = "https://api.github.com/search/repositories";
         this.bodyRef = React.createRef();
     }
@@ -18,7 +18,6 @@ class Repos extends Component {
     componentDidUpdate(prevProps) {
         if (this.props.topic !== prevProps.topic || this.props.language !== prevProps.language) {
             this.fetchResults();
-            this.noResults = false;
         }
     }
 
@@ -27,12 +26,10 @@ class Repos extends Component {
     }
 
     fetchResults = () => {
-        this.setState({results: '', loading: true, noResults: false})
-        // this.loading = true;
-        // this.noResults = false;
+        this.setState({results: [], loading: true, noResults: false, sortDesc: true})
 
         const {topic, language} = this.props;
-        fetch(`${this.GitUrl}?q=${topic}+language:${language}&username=ajbazz&password=734c87ca83cdc84a7d9683b28f11f80acd958d83`, {
+        fetch(`${this.GitUrl}?q=${topic}+language:${language}&username=ajbazz&password=734c87ca83cdc84a7d9683b28f11f80acd958d83&per_page=100`, {
             method: 'GET',
             headers: this.headers
         }).then((response) => {
@@ -42,67 +39,90 @@ class Repos extends Component {
             response
                 .json()
                 .then((data) => {
-                    this.renderResults(data);
+                    this.renderResults(data.items);
                 })
         }).catch((error) => {
             console.log('Request failed', error);
         });
     }
 
+    sortByDate = (dataItems) => {
+        let sortItems = (dataItems.length)
+            ? dataItems
+            : this.state.results;
+        let sorter = (!this.state.sortDesc)
+            ? true
+            : false;
+        let sortNum = (sorter)
+            ? 1
+            : -1;
+
+        sortItems.sort((a, b) => {
+            let aDate = new Date(a.created_at);
+            let bDate = new Date(b.created_at);
+            if (aDate.getTime() > bDate.getTime()) {
+                return sortNum;
+            } else if (aDate.getTime() < bDate.getTime()) {
+                return -sortNum;
+            }
+            return 0;
+        })
+
+        this.setState({sortDesc: sorter});
+        return sortItems;
+    }
+
     getCells = (link, name, date) => {
         let frag = document.createDocumentFragment();
         let newCell = document.createElement('td');
         let repoLink = document.createElement('a');
-        let repoDate = new Date(date);
-        let formatDate = (repoDate.getMonth() + 1) + '/' + repoDate.getDate() + '/' +  repoDate.getFullYear();
 
+        //Attach repo name and link
         repoLink.setAttribute('href', link);
         repoLink.setAttribute('target', '_blank');
         repoLink.textContent = name;
         newCell.appendChild(repoLink);
         frag.appendChild(newCell);
 
+        //Format date as mm/dd/yyyy and add leading zeros to line up column
+        let repoDate = new Date(date);
+        let leadingZeroM = (repoDate.getMonth() + 1 < 10)
+            ? '0'
+            : '';
+        let leadingZeroD = (repoDate.getDate() < 10)
+            ? '0'
+            : '';
+        let formatDate = `${leadingZeroM}${repoDate.getMonth() + 1}/${leadingZeroD}${repoDate.getDate()}/${repoDate.getFullYear()}`;
+
         newCell = document.createElement('td');
         newCell.textContent = formatDate;
         frag.appendChild(newCell);
         return frag;
     }
-    
 
     renderResults = (data) => {
-        if (data.total_count === 0) {
+        if (!data.length) {
             this.setState({loading: false, noResults: true});
         } else {
-            const table = this.bodyRef.current;
-            const dataItems = data.items
-            let cells, newRow = '';
+            const tableBody = this.bodyRef.current;
+            let dataItems = data;
+            let cells,
+                newRow;
+            let sortedItems = this.sortByDate(dataItems);
 
-
-            
-            let sortItems = dataItems;
-            sortItems.sort((a, b) => {
-                let aDate = new Date(a.created_at);
-                let bDate = new Date(b.created_at);
-                if (aDate.getTime() > bDate.getTime()) {
-                  return 1;
-                } else if (aDate.getTime() < bDate.getTime()) {
-                  return -1;
-                }
-                return 0;
-            })
-
-
-
-            for (let i = 0; i < dataItems.length; i++) {
-                cells = this.getCells(dataItems[i].html_url, dataItems[i].name, dataItems[i].created_at)
-                newRow = table.insertRow();
+            tableBody.innerHTML = "";
+            for (let i = 0; i < sortedItems.length; i++) {
+                cells = this.getCells(sortedItems[i].html_url, sortedItems[i].name, sortedItems[i].created_at)
+                newRow = tableBody.insertRow();
                 newRow.appendChild(cells);
             }
-
-            
-            this.setState({results: sortItems, loading: false});
-
+            this.setState({results: sortedItems, loading: false});
         }
+    }
+
+    handleColumnClick = (event) => {
+        event.preventDefault();
+        this.renderResults(this.state.results);
     }
 
     render() {
@@ -123,18 +143,30 @@ class Repos extends Component {
 
                 <div
                     className={this.state.results.length
-                      ? "d-block"
-                      : "d-none"}>
-                    <div className="criteria">Repositories found for search term "{topic}" and language {language}</div>
-                    <table className="table table-striped table-light table-hover text-left">
-                        <thead className="thead-light">
-                            <tr>
-                                <th scope="col">Repository Name</th>
-                                <th scope="col">Date</th>
-                            </tr>
-                        </thead>
-                        <tbody ref={this.bodyRef}></tbody>
-                    </table>
+                    ? "d-block"
+                    : "d-none"}>
+                    <div className="criteria">Repositories found for search term "{topic}" in {language}</div>
+                    <div className="tableContainer mb-4">
+                        <table className="table table-striped table-light table-hover text-left mb-0">
+                            <thead className="thead-light">
+                                <tr>
+                                    <th scope="col">Repository Name</th>
+                                    <th scope="col" onClick={this.handleColumnClick}>
+                                        <span>Date</span>
+                                        <FaCaretDown
+                                            className={(!this.state.sortDesc)
+                                            ? "d-inline-block"
+                                            : "d-none"}/>
+                                        <FaCaretUp
+                                            className={(!this.state.sortDesc)
+                                            ? "d-none"
+                                            : "d-inline-block"}/>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody ref={this.bodyRef}></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         )

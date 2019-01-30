@@ -23,10 +23,15 @@
   min-height: 300px;
 }
 
+.spinner {
+  width: 120px;
+  margin-top: 20px;
+}
 
 .searchBox {
   margin-bottom: 15px;
   margin-top: 15px;
+  padding-left: 25px;
 }
 
 .searchBox .btn {
@@ -34,7 +39,7 @@
   padding: 0 10px 0 10px;
 }
 
-.searchBox .spinner {
+.spinner {
   width: 120px;
   margin-top: 20px;
 }
@@ -46,8 +51,27 @@
 .criteria {
   text-align: center;
   font-size: 1.2rem;
-  margin-top: 30px;
+  margin-top: 20px;
   padding: 5px 0 5px 0;
+}
+
+.tableContainer {
+  max-height:600px;
+  overflow: auto;
+  overflow-x: hidden;
+  border: 2px solid #ced4da;
+}
+
+table th:last-child {
+  cursor: pointer;
+}
+
+table th:last-child span {
+  padding-right: 5px;
+}
+
+table th:last-child:hover {
+  color: #007bff;
 }
 
 .App-logo {
