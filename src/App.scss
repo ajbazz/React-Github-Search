@@ -1,0 +1,69 @@
+@import url("https://maxcdn.bootstrapcdn.com/bootstrap/latest/css/bootstrap.min.css");
+
+.App.container {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 1), 0 6px 20px 0 rgba(0, 0, 0, 1);
+  min-height: 300px;
+  margin-top: 15px;
+  text-align: center;
+  background: #f0f8ff;
+  border-radius: 10px;
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+    height: 40vmin;
+  }
+  .header, .marketing, .container, .footer {
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    position: relative;
+  }
+  .App-header {
+    background-color: #282c34;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: calc(10px + 2vmin);
+    color: white;
+  }
+  .searchBox {
+    margin-bottom: 15px;
+    margin-top: 15px;
+    padding-left: 25px;
+    .btn {
+      height: 42px;
+      padding: 0 10px 0 10px;
+    }
+  }
+  .spinner {
+    width: 120px;
+    margin-top: 20px;
+  }
+  .noResults {
+    font-size: 1.2rem;
+  }
+  .criteria {
+    text-align: center;
+    font-size: 1.2rem;
+    margin-top: 20px;
+    padding: 5px 0 5px 0;
+  }
+  .tableContainer {
+    max-height:600px;
+    overflow: auto;
+    overflow-x: hidden;
+    border: 2px solid #ced4da;
+    table th:last-child {
+      cursor: pointer;
+      & span {
+        padding-right: 5px;
+      }
+      &:hover {
+        color: #007bff;
+      }
+    }
+  }
+  
+} 

@@ -29,7 +29,7 @@ class Repos extends Component {
         this.setState({results: [], loading: true, noResults: false, sortDesc: true})
 
         const {topic, language} = this.props;
-        fetch(`${this.GitUrl}?q=${topic}+language:${language}&username=ajbazz&password=734c87ca83cdc84a7d9683b28f11f80acd958d83&per_page=100`, {
+        fetch(`${this.GitUrl}?q=${topic}+language:${language}&username=REACT_APP_GITHUB_USER&password=REACT_APP_GITHUB_TOKEN&per_page=100`, {
             method: 'GET',
             headers: this.headers
         }).then((response) => {
@@ -72,16 +72,22 @@ class Repos extends Component {
         return sortItems;
     }
 
-    getCells = (link, name, date) => {
+    getCells = (link, name, desc, date) => {
         let frag = document.createDocumentFragment();
-        let newCell = document.createElement('td');
-        let repoLink = document.createElement('a');
+        let description = (desc) ? desc : "(no description available)"
 
         //Attach repo name and link
+        let newCell = document.createElement('td');
+        let repoLink = document.createElement('a');
         repoLink.setAttribute('href', link);
         repoLink.setAttribute('target', '_blank');
         repoLink.textContent = name;
         newCell.appendChild(repoLink);
+        frag.appendChild(newCell);
+
+        //Attach repo description
+        newCell = document.createElement('td');
+        newCell.textContent = description;
         frag.appendChild(newCell);
 
         //Format date as mm/dd/yyyy and add leading zeros to line up column
@@ -112,7 +118,7 @@ class Repos extends Component {
 
             tableBody.innerHTML = "";
             for (let i = 0; i < sortedItems.length; i++) {
-                cells = this.getCells(sortedItems[i].html_url, sortedItems[i].name, sortedItems[i].created_at)
+                cells = this.getCells(sortedItems[i].html_url, sortedItems[i].name, sortedItems[i].description, sortedItems[i].created_at)
                 newRow = tableBody.insertRow();
                 newRow.appendChild(cells);
             }
@@ -127,6 +133,8 @@ class Repos extends Component {
 
     render() {
         const {topic, language} = this.props;
+        const resultCount = (this.state.results.length === 100) ? "100+" : this.state.results.length;
+
         return (
             <div>
                 <img
@@ -145,12 +153,13 @@ class Repos extends Component {
                     className={this.state.results.length
                     ? "d-block"
                     : "d-none"}>
-                    <div className="criteria">Repositories found for search term "{topic}" in {language}</div>
+                    <div className="criteria">{resultCount} Repositories found for search term "{topic}" in {language}</div>
                     <div className="tableContainer mb-4">
                         <table className="table table-striped table-light table-hover text-left mb-0">
                             <thead className="thead-light">
                                 <tr>
-                                    <th scope="col">Repository Name</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Description</th>
                                     <th scope="col" onClick={this.handleColumnClick}>
                                         <span>Date</span>
                                         <FaCaretDown

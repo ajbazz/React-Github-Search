@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import SearchBox from './components/SearchBox';
 import {Row, Col} from 'react-bootstrap';
-import './App.css';
+import './App.scss';
 
 class App extends Component {
     render() {
